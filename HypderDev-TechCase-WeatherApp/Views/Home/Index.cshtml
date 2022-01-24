@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="text-center">
+    <h1 class="display-4">Anlık hava durumu takibi</h1>
+    <hr />
+    <p>Şehir araması yapmak için: <input type="text" id="inputcity" /> <button id="search">Ara</button> <button id="reset">Yenile</button></p>
+</div>
+<div class="row" id="param" align="center">
+    <div class="col-md-4">
+        <div class="card" align="center">
+            <div class="card-body">
+                <h5 class="card-title" id="city0"></h5>
+                <p class="card-text" id="detail0"></p>
+                <a href="#" class="btn btn-primary">Detay..</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card" align="center">
+            <div class="card-body">
+                <h5 class="card-title" id="city1"></h5>
+                <p class="card-text" id="detail1"></p>
+                <a href="#" class="btn btn-primary">Detay..</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card" align="center">
+            <div class="card-body">
+                <h5 class="card-title" id="city2"></h5>
+                <p class="card-text" id="detail2"></p>
+                <a href="#" class="btn btn-primary">Detay..</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="params" align="center">
+    <div class="card" align="center">
+        <div class="card-body">
+            <h5 class="card-title" id="city3"></h5>
+            <p class="card-text" id="detail3"></p>
+            <a href="#" class="btn btn-primary">Detay..</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    /*Istanbul*/
+    $.ajax({
+        url: 'https://api.openweathermap.org/data/2.5/weather/',
+        data: {
+            q: 'Istanbul',
+            units: 'metric',
+            appid: '23ed72b43d15737fb65c75bf53d39810',
+            lang: 'tr'
+        },
+        dataType: 'json',
+        success: function (apiResponse) {
+            console.log(`Current temperature in ${apiResponse.name} is ${apiResponse.main.temp}℃`);
+            $("#city0").text(apiResponse.name);
+            $("#detail0").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
+        }
+    });
+    /*Ankara*/
+    $.ajax({
+        url: 'https://api.openweathermap.org/data/2.5/weather/',
+        data: {
+            q: 'Ankara',
+            units: 'metric',
+            appid: '23ed72b43d15737fb65c75bf53d39810',
+            lang: 'tr'
+        },
+        dataType: 'json',
+        success: function (apiResponse) {
+            console.log(`Current temperature in ${apiResponse.name} is ${apiResponse.main.temp}℃`);
+            $("#city1").text(apiResponse.name);
+            $("#detail1").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
+        }
+    });
+    /*İzmir*/
+    $.ajax({
+        url: 'https://api.openweathermap.org/data/2.5/weather/',
+        data: {
+            q: 'Izmir',
+            units: 'metric',
+            appid: '23ed72b43d15737fb65c75bf53d39810',
+            lang: 'tr'
+        },
+        dataType: 'json',
+        success: function (apiResponse) {
+            console.log(`Current temperature in ${apiResponse.name} is ${apiResponse.main.temp}℃`);
+            $("#city2").text(apiResponse.name);
+            $("#detail2").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
+        }
+    });
+
+
+    /*Özel arama*/
+    $(document).ready(function () {
+        $("#params").hide();
+
+        $("#search").click(function () {
+            $.ajax({
+                url: 'https://api.openweathermap.org/data/2.5/weather/',
+                data: {
+                    q: $("#inputcity").val(),
+                    units: 'metric',
+                    appid: '23ed72b43d15737fb65c75bf53d39810',
+                    lang: 'tr'
+                },
+                dataType: 'json',
+                success: function (apiResponse) {
+                    console.log(`Current temperature in ${apiResponse.name} is ${apiResponse.main.temp}℃`);
+                    $("#params").show();
+                    $("#param").hide();
+                    $("#city3").text(apiResponse.name);
+                    $("#detail3").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
+                },
+                error: function () {
+                    alert("Şehir bulunamadı");
+                }
+            });
+        });
+
+        $("#reset").click(function () {
+            $("#params").hide();
+            $("#param").show();
+        });
+    });
+
+</script>
