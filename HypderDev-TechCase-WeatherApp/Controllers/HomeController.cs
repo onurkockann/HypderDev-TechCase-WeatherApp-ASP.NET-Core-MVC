@@ -28,6 +28,13 @@ namespace HypderDev_TechCase_WeatherApp.Controllers
             return View();
         }
 
+        public IActionResult Detail(String lat, String lon)
+        {
+            ViewBag.lat = lat;
+            ViewBag.lon = lon;
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

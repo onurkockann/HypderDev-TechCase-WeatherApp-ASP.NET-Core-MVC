@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Detail";
+}
+
+<input type="hidden" id="citylat" value="@ViewBag.lat" />
+<input type="hidden" id="citylon" value="@ViewBag.lon" />
+<div class="card" align="center">
+    <div class="card-header">
+        <h5 class="card-title">Geçmiş hava durumu bilgileri</h5>
+    </div>
+    <div class="card-body" id="detail0">
+
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    /*Son 24 saat*/
+    $.ajax({
+        url: 'https://api.openweathermap.org/data/2.5/onecall/timemachine',
+        data: {
+            lat: $("#citylat").val(),
+            lon: $("#citylon").val(),
+            dt: Math.floor(Date.now() / 1000),
+            appid: '23ed72b43d15737fb65c75bf53d39810',
+            units: 'metric',
+            lang: 'tr'
+        },
+        dataType: 'json',
+        success: function (apiResponse) {
+            var hourlyTemps = apiResponse.hourly;
+            hourlyTemps.reverse();
+            $.each(hourlyTemps, function (propName, propVal) {
+                $('<p>' + (propName + 1) + " saat önceki sıcaklık değeri: " + propVal.temp
+                    + '℃ <img src="' + "https://openweathermap.org/img/wn/" + propVal.weather[0].icon + "@@2x.png" +'" type="image/x-icon" />'
+                    + '</p>').appendTo('#detail0');
+            });
+        }
+    });
+</script>
