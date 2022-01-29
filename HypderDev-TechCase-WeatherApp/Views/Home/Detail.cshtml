@@ -21,7 +21,7 @@
         data: {
             lat: $("#citylat").val(),
             lon: $("#citylon").val(),
-            dt: Math.floor(Date.now() / 1000),
+            dt: Math.floor(Date.now() / 1000) - 18000,
             appid: '23ed72b43d15737fb65c75bf53d39810',
             units: 'metric',
             lang: 'tr'
@@ -37,4 +37,7 @@
             });
         }
     });
+
+    //Şehrin detaylı geçmiş(historical) hava durumu bilgisi için bu şehrin enlem ve boylam koordinatlarına ihtiyaç duyulmaktadır.
+    //Bu bilgiler bir önceki calldan buraya aktarılarak elde edilir ve yeni JSON elde edilerek foreach ile geçmiş saat sıcaklıkları yazdırılır.
 </script>

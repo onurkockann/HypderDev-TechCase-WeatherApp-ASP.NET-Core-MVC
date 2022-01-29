@@ -1,4 +1,5 @@
-﻿@{
+﻿@model HypderDev_TechCase_WeatherApp.Models.City
+@{
     ViewData["Title"] = "Home Page";
 }
 <div class="text-center">
@@ -19,8 +20,8 @@
                 <h5 class="card-title" id="city0"></h5>
                 <p class="card-text" id="detail0"></p>
                 <form action="/Home/Detail" method="get">
-                    <input type="hidden" name="lat" id="city0lat" value="" />
-                    <input type="hidden" name="lon" id="city0lon" value="" />
+                    <input type="hidden" name="CoordLat" id="city0lat" value="" />
+                    <input type="hidden" name="CoordLon" id="city0lon" value="" />
                     <button type="submit" class="btn btn-primary btn-md mr-1 mb-2">Detay</button>
                 </form>
             </div>
@@ -33,8 +34,8 @@
                 <h5 class="card-title" id="city1"></h5>
                 <p class="card-text" id="detail1"></p>
                 <form action="/Home/Detail" method="get">
-                    <input type="hidden" name="lat" id="city1lat" value="" />
-                    <input type="hidden" name="lon" id="city1lon" value="" />
+                    <input type="hidden" name="CoordLat" id="city1lat" value="" />
+                    <input type="hidden" name="CoordLon" id="city1lon" value="" />
                     <button type="submit" class="btn btn-primary btn-md mr-1 mb-2">Detay</button>
                 </form>
             </div>
@@ -47,8 +48,8 @@
                 <h5 class="card-title" id="city2"></h5>
                 <p class="card-text" id="detail2"></p>
                 <form action="/Home/Detail" method="get">
-                    <input type="hidden" name="lat" id="city2lat" value="" />
-                    <input type="hidden" name="lon" id="city2lon" value="" />
+                    <input type="hidden" name="CoordLat" id="city2lat" value="" />
+                    <input type="hidden" name="CoordLon" id="city2lon" value="" />
                     <button type="submit" class="btn btn-primary btn-md mr-1 mb-2">Detay</button>
                 </form>
             </div>
@@ -59,81 +60,72 @@
 
 <div id="params" align="center">
     <div class="card" align="center">
+        <div class="card-header">
+            <div align="right">
+                <form action="/Home/AddCity" method="post" onsubmit="return confirm('Araması yapılan bu şehir bilgilerini kaydetmek istiyormusunuz?');">
+                    <input type="hidden" name="CityName" id="city3f" value="" />
+                    <input type="hidden" name="CoordLat" id="city3latf" value="" />
+                    <input type="hidden" name="CoordLon" id="city3lonf" value="" />
+                    <button type="submit" class="btn btn-success">+</button>
+                </form>
+            </div>
+        </div>
         <div align="center"><img class="card-img-top" src="..." alt="Hava iconu" id="city3img" style="width:10%;"></div>
         <div class="card-body">
             <h5 class="card-title" id="city3"></h5>
             <p class="card-text" id="detail3"></p>
             <form action="/Home/Detail" method="get">
-                <input type="hidden" name="lat" id="city3lat" value="" />
-                <input type="hidden" name="lon" id="city3lon" value="" />
+                <input type="hidden" name="CoordLat" id="city3lat" value="" />
+                <input type="hidden" name="CoordLon" id="city3lon" value="" />
                 <button type="submit" class="btn btn-primary btn-md mr-1 mb-2">Detay</button>
             </form>
         </div>
     </div>
 </div>
+<hr />
+<br />
+<div class="row">
+    @foreach (City item in ViewBag.Sehirler)
+    {
+        <div class="col-md-4">
+            <div class="card" align="center">
+                <div class="card-header">
+                    <div align="right">
+                        <form action="/Home/DeleteCity" method="post" onsubmit="return confirm('Kayıtlı olan bu şehir bilgilerini silmek istiyormusunuz?');">
+                            <input type="hidden" name="CityID" id="CityID" value="@item.CityID" />
+                            <button type="submit" class="btn btn-danger">-</button>
+                        </form>
+                    </div>
+                </div>
+                <div align="center"><img class="card-img-top" src="..." alt="Hava iconu" id="img_@item.CityID" style="width:30%;"></div>
+                <div class="card-body">
+                    <h5 class="card-title" id="name_@item.CityID">@item.CityName</h5>
+                    <p class="card-text" id="detail_@item.CityID"></p>
+                    <form action="/Home/Detail" method="get">
+                        <input type="hidden" name="CoordLat" id="testlat" value="@item.CoordLat" />
+                        <input type="hidden" name="CoordLon" id="testlon" value="@item.CoordLon" />
+                        <button type="submit" class="btn btn-primary btn-md mr-1 mb-2">Detay</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    }
+
+</div>
+<input type="hidden" id="start" value="@ViewBag.StartIndex" />
+<input type="hidden" id="end" value="@ViewBag.EndIndex" />
+@*Yukarıdaki iki hidden parametre sayesinde dbdeki şehirlerin identity(1,1) olan değerlerinin ilk ve son değerleri yazılır.
+JS içinde JQuery ile kullanılması için hidden type inputlara atanmıştır. DBdeki şehirler için API call işlemi yapılırken,
+bu başlangıç ve bitiş indexleri arasında ilerlenecek ve selectorler dynamic çalışacaktır.*@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-    /*Istanbul*/
-    $.ajax({
-        url: 'https://api.openweathermap.org/data/2.5/weather/',
-        data: {
-            q: 'Istanbul',
-            units: 'metric',
-            appid: '23ed72b43d15737fb65c75bf53d39810',
-            lang: 'tr'
-        },
-        dataType: 'json',
-        success: function (apiResponse) {
-            $("#city0").text(apiResponse.name);
-            $("#city0lat").val(apiResponse.coord.lat);
-            $("#city0lon").val(apiResponse.coord.lon);
-            $("#detail0").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
-            $("#city0img").attr("src", "https://openweathermap.org/img/wn/" + apiResponse.weather[0].icon + "@@2x.png");
-        }
-    });
-    /*Ankara*/
-    $.ajax({
-        url: 'https://api.openweathermap.org/data/2.5/weather/',
-        data: {
-            q: 'Ankara',
-            units: 'metric',
-            appid: '23ed72b43d15737fb65c75bf53d39810',
-            lang: 'tr'
-        },
-        dataType: 'json',
-        success: function (apiResponse) {
-            $("#city1").text(apiResponse.name);
-            $("#city1lat").val(apiResponse.coord.lat);
-            $("#city1lon").val(apiResponse.coord.lon);
-            $("#detail1").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
-            $("#city1img").attr("src", "https://openweathermap.org/img/wn/" + apiResponse.weather[0].icon + "@@2x.png");
-        }
-    });
-    /*İzmir*/
-    $.ajax({
-        url: 'https://api.openweathermap.org/data/2.5/weather/',
-        data: {
-            q: 'Izmir',
-            units: 'metric',
-            appid: '23ed72b43d15737fb65c75bf53d39810',
-            lang: 'tr'
-        },
-        dataType: 'json',
-        success: function (apiResponse) {
-            $("#city2").text(apiResponse.name);
-            $("#city2lat").val(apiResponse.coord.lat);
-            $("#city2lon").val(apiResponse.coord.lon);
-            $("#detail2").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
-            $("#city2img").attr("src", "https://openweathermap.org/img/wn/" + apiResponse.weather[0].icon + "@@2x.png");
-        }
-    });
-
-
-    /*Özel arama*/
     $(document).ready(function () {
+        /*Üst panel gizlenir*/
         $("#params").hide();
 
+        /*Özel şehir araması.*/
         $("#search").click(function () {
             $.ajax({
                 url: 'https://api.openweathermap.org/data/2.5/weather/',
@@ -147,11 +139,18 @@
                 success: function (apiResponse) {
                     $("#params").show();
                     $("#param").hide();
+
                     $("#city3").text(apiResponse.name);
                     $("#city3lat").val(apiResponse.coord.lat);
                     $("#city3lon").val(apiResponse.coord.lon);
+
                     $("#detail3").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
                     $("#city3img").attr("src", "https://openweathermap.org/img/wn/" + apiResponse.weather[0].icon + "@@2x.png");
+
+                    /*Şehri eklemek için hidden valuelar*/
+                    $("#city3f").val(apiResponse.name);
+                    $("#city3latf").val(apiResponse.coord.lat);
+                    $("#city3lonf").val(apiResponse.coord.lon);
                 },
                 error: function () {
                     alert("Şehir bulunamadı");
@@ -159,11 +158,95 @@
             });
         });
 
+        /*Yenile buttonuna tıklanınca hard coded yazılmış 3 şehir gösterilir ve diğer divler kapatılır. Arama textboxıda temizlenir.*/
         $("#reset").click(function () {
             $("#params").hide();
             $("#param").show();
             $("#inputcity").val("");
         });
+
+
+        /*Istanbul*/
+        $.ajax({
+            url: 'https://api.openweathermap.org/data/2.5/weather/',
+            data: {
+                q: 'Istanbul',
+                units: 'metric',
+                appid: '23ed72b43d15737fb65c75bf53d39810',
+                lang: 'tr'
+            },
+            dataType: 'json',
+            success: function (apiResponse) {
+                $("#city0").text(apiResponse.name);
+                $("#city0lat").val(apiResponse.coord.lat);
+                $("#city0lon").val(apiResponse.coord.lon);
+                $("#detail0").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
+                $("#city0img").attr("src", "https://openweathermap.org/img/wn/" + apiResponse.weather[0].icon + "@@2x.png");
+            }
+        });
+        /*Ankara*/
+        $.ajax({
+            url: 'https://api.openweathermap.org/data/2.5/weather/',
+            data: {
+                q: 'Ankara',
+                units: 'metric',
+                appid: '23ed72b43d15737fb65c75bf53d39810',
+                lang: 'tr'
+            },
+            dataType: 'json',
+            success: function (apiResponse) {
+                $("#city1").text(apiResponse.name);
+                $("#city1lat").val(apiResponse.coord.lat);
+                $("#city1lon").val(apiResponse.coord.lon);
+                $("#detail1").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
+                $("#city1img").attr("src", "https://openweathermap.org/img/wn/" + apiResponse.weather[0].icon + "@@2x.png");
+            }
+        });
+        /*İzmir*/
+        $.ajax({
+            url: 'https://api.openweathermap.org/data/2.5/weather/',
+            data: {
+                q: 'Izmir',
+                units: 'metric',
+                appid: '23ed72b43d15737fb65c75bf53d39810',
+                lang: 'tr'
+            },
+            dataType: 'json',
+            success: function (apiResponse) {
+                $("#city2").text(apiResponse.name);
+                $("#city2lat").val(apiResponse.coord.lat);
+                $("#city2lon").val(apiResponse.coord.lon);
+                $("#detail2").text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
+                $("#city2img").attr("src", "https://openweathermap.org/img/wn/" + apiResponse.weather[0].icon + "@@2x.png");
+            }
+        });
+        //Üstteki 3 adet hardcoded verilmiş şehirler default olarak tanımlanmıştır ve kod bloğu duplicate edilmiştir.
+        //Duplicate edilen kodlarda sadece q(şehir ismi) parametresi değiştirilmiştir.
+
+
+        var start = document.getElementById("start").value;
+        var end = document.getElementById("end").value;
+        for (let i = start; i <= end; i++) {
+            /*Kayıtlı sehirler*/
+            $.ajax({
+                url: 'https://api.openweathermap.org/data/2.5/weather/',
+                data: {
+                    q: $("#name_" + i).text(),
+                    units: 'metric',
+                    appid: '23ed72b43d15737fb65c75bf53d39810',
+                    lang: 'tr'
+                },
+                dataType: 'json',
+                success: function (apiResponse) {
+                    $("#detail_" + i).text(apiResponse.weather[0].description + " ve " + apiResponse.main.temp + " derece.");
+                    $("#img_" + i).attr("src", "https://openweathermap.org/img/wn/" + apiResponse.weather[0].icon + "@@2x.png");
+                }
+            });
+        }
+
+        //Bu son kod bloğu ise veritabanında kayıtlı olan şehirlerin isimlerini jquery selectorlerı ile erişerek dataya sokar.
+        //Data querysi hazır olan ajax kodu sayesinde API, dbde kaç adet kayıtlı şehir varsa o kadar call etme işlemini gerçekleştirir.
+        //Böylelikle dbde varolan şehirlerin anlık hava durumu bilgileri ekrana hazır bi şekilde basılmış olur.
     });
 
 </script>
